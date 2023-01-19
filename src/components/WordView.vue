@@ -71,7 +71,7 @@ export default {
 <style scoped>
 
 .wordview {
-  margin-top: 20px;
+  padding-top: 1em;
 }
 
 .wordview .head {

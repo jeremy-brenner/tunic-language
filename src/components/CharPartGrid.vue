@@ -7,10 +7,10 @@
       @mouseout="mouseOut()"
       v-for="(char,i) in chars" :key="i"
     >
+      <TunicChar :char="wordChars[i]" :centerLine="centerLine" :highlite="highlite"/>
       <span class="phoneme" :class="{ missing: !char.phoneme }">
         {{ char.phoneme || i }}
       </span>
-      <TunicChar :char="wordChars[i]" :centerLine="centerLine" :highlite="highlite"/>
     </span>
   </div>
 </template>
@@ -79,7 +79,6 @@
   }
 
   .charGrid {
-    margin-top: 20px;
     display: grid;
   }
 
@@ -92,7 +91,7 @@
   .phoneme {
     display: inline-block;
     width: 1.25em;
-    padding-right: 0.5em;
+    padding-left: 0.5em;
   }
   .missing {
     color: #ff0000;

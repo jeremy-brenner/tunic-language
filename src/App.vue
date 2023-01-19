@@ -1,6 +1,5 @@
 <template>
   <div class="left">
-    <CenterLineToggle v-model="centerLine" />
     <CharacterGrid title="Consonants" charType="consonants" :centerLine="centerLine" :highlite="highlite" v-on:pickCharPart="pickCharPart" v-on:highliteChar="highliteChar"/>
     <CharacterGrid title="Vowels" charType="vowels" :centerLine="centerLine" :highlite="highlite" v-on:pickCharPart="pickCharPart" v-on:highliteChar="highliteChar"/>
     <CharacterGrid title="Swap" charType="swap" :centerLine="centerLine" :highlite="highlite" v-on:pickCharPart="pickCharPart" v-on:highliteChar="highliteChar"/>
@@ -15,7 +14,6 @@
     <WordView :words="currentWords" :position="position" :centerLine="centerLine" :highlite="highlite" v-on:highliteChar="highliteChar" v-on:selectChar="selectChar" />
   </div>
   <div class="right">
-    <TextToIPA />
     <div class="words">
       <WordView :words="word.words" :centerLine="centerLine" :highlite="highlite" v-on:highliteChar="highliteChar" v-for="word in words" :key="word.words" />
     </div>
@@ -25,16 +23,12 @@
 <script>
 const words = require('./words.json');
 
-import TextToIPA from './components/TextToIPA.vue' 
-import CenterLineToggle from './components/CenterLineToggle.vue'
 import CharacterGrid from './components/CharPartGrid.vue'
 import WordView from './components/WordView.vue'
 
 export default {
   name: 'App',
   components: {
-    TextToIPA,
-    CenterLineToggle,
     CharacterGrid,
     WordView,
   },
@@ -122,6 +116,11 @@ export default {
 </script>
 
 <style>
+body {
+  margin: 0;
+  padding: 0;
+}
+
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -129,26 +128,35 @@ export default {
   text-align: left;
   color: #2c3e50;
   font-size: 24px;
+  width: 100vw;
+  height: 100vh;
+  display: grid;
+  grid-template-columns: 25em auto;
 }
+
 .controls {
-  margin-top: 2em;
 }
+
 .controls span {
   display: inline-block;
   border: 1px solid grey;
   width: 4em;
   text-align: center;
 }
+
 .left, .right {
-  margin: 1em;
   vertical-align: top;
-  display: inline-block;
+  overflow: hidden;
+  padding: 1em;
 }
+
+.left {
+
+}
+
 .words {
+  height: 100%;
   overflow-x: auto;
   overflow-y: auto;
-  height: 75vh;
-  width: 50vw;
-  margin-top: 1em;
 }
 </style>

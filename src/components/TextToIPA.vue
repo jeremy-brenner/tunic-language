@@ -27,8 +27,6 @@ export default {
 </script>
 <style scoped>
   .output {
-    margin-left: 10px;
     border: 1px solid grey;
-    width: 100px;
   }
 </style>

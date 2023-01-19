@@ -6,8 +6,11 @@
       @mouseout="mouseOut()"
       v-for="(rune,i) in runes" :key="i"
     >
-      <span class="rune" v-if="i">
-        <TunicRune :rune="wordRunes[i]" :centerLine="centerLine" :highlite="highlite" />
+      <span class="hotkey" v-if="i">
+        {{ hotKey(i) }}
+      </span>     
+       <span class="rune" v-if="i">
+        <SVGRune :rune="wordRunes[i]" :highlite="highlite" />
       </span>
       <span class="phoneme" v-if="i && runeType != 'swap'">
           {{ rune.phoneme }}
@@ -22,13 +25,13 @@
   </div>
 </template>
 <script>
-  import TunicRune from './TunicRune.vue'
+  import SVGRune from './SVGRune.vue'
   const runeDefs = require('../runeDefs.json');
 
   export default {
     name: 'RunePartGrid',
     components: { 
-      TunicRune
+      SVGRune
     },
     data: function() {
       return {
@@ -39,7 +42,7 @@
         trashSpan: runeDefs[this.runeType].length < 6 ? 5 : 6,
       }
     },
-    props: ['runeType', 'highlite', 'centerLine'],
+    props: ['runeType', 'highlite'],
     emits: ['pickRunePart', 'highliteRune'],
     computed: {
       typeIndex: function() {
@@ -66,6 +69,21 @@
       }
     },
     methods: {
+      hotKey: function(num) {
+        let offset;
+        switch (this.runeType) {
+          case 'consonants':
+            offset = 96;
+            break;
+          case 'vowels':
+            offset = 64;
+            break;
+          case 'swap':
+            offset = 45;
+            break;
+        }
+        return String.fromCharCode(num+offset)
+      },
       click: function (value) {
         this.$emit('pickRunePart', {
           typeIndex: this.typeIndex,
@@ -85,7 +103,7 @@
 <style scoped>
   .runeGrid {
     display: grid;
-    grid-template-columns: repeat(v-bind(gridWidth), 3em);
+    grid-template-columns: repeat(v-bind(gridWidth), 16.6666%);
     border-top: 1px solid gray;
     border-left: 1px solid gray;
   }
@@ -102,16 +120,16 @@
     user-select: none;
     display: grid;
     text-align: center;
-    grid-template-columns: 50% 50%;
+    grid-template-columns: 33.3% 33.3% 33.3%;
   }
 
   .runeGrid > span:hover {
-    background-color: aliceblue;
+    background-color: #f0f0f0;
   }
 
   .trash {
     display: inline-grid;
-    grid-column: span 2;
+    grid-column: span 3;
   }
 
   .swap {
@@ -120,4 +138,16 @@
   .swap .icon {
     width: 60%;
   }
+
+  .hotkey {
+    font-size: 1.2em;
+  }
+
+  .rune {
+    filter: drop-shadow(0.04em 0.04em 0.05em rgb(0 0 0 / 0.4)); 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
 </style>

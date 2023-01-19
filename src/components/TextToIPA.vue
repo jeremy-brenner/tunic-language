@@ -1,6 +1,6 @@
 <template>
   <div id="ipaLookup">
-    <input type="text" @keyup.enter="lookup"  v-model="word"><button @click="lookup">GO</button>
+    <input type="text" @keyup.enter="lookup" @keydown.stop v-model="word"><button @click="lookup">GO</button>
     <div class="output" v-for="result in results" :key="result.word">
       <span class="phoneme">
         {{ result.phoneme }} 

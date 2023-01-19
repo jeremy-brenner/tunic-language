@@ -2,13 +2,12 @@
   <div class="wordview">
     <span class="wordSpan" v-for="(word,wordNum) in words" :key="word" >
       <div class="tunic">
-        <TunicRune 
+        <SVGRune 
           :rune="rune" 
           :highlite="highlite" 
           @mouseover="mouseOver(rune)"
           @mouseout="mouseOut()"
           @click="click(wordNum,runeNum)"
-          :centerLine="centerLine" 
           :class="{
             current: isCurrent(wordNum,runeNum)
           }"
@@ -27,15 +26,15 @@
 <script>
 const runeDefs = require('../runeDefs.json');
 
-import TunicRune from './TunicRune.vue'
+import SVGRune from './SVGRune.vue'
 import IPAToText from './IPAToText.vue'
 
 export default {
   name: 'WordView',
   components: {
-    TunicRune, IPAToText
+    SVGRune, IPAToText
   },
-  props: ['words', 'highlite', 'centerLine', 'position', 'showPhonics', 'showEnglish'],
+  props: ['words', 'highlite', 'position', 'showPhonics', 'showEnglish'],
   emits: ['highliteRune', 'selectRune'],
   methods: {
     phonicWord: function(word) {
@@ -76,7 +75,7 @@ export default {
 }
 
 .wordSpan {
-  margin-right: 0.25em;
+  margin-right: 0.5em;
   vertical-align: top;
 }
 
@@ -88,6 +87,9 @@ export default {
   display: inline-block;
 }
 
+.tunic {
+  filter: drop-shadow(0.05em 0.05em 0.05em rgb(0 0 0 / 0.5));
+}
 .tunic, .phonic, .text {
   display: block;
 }

@@ -2,7 +2,7 @@
   <div class="left">
     <div class='controls'>
       <div>Title:</div>
-      <input type="text" v-model="title"><button @click="save">save</button>
+      <input type="text" v-model="title" @keydown.stop=""><button @click="save">save</button>
       <span @click="delWord" title="Delete Word">
         <font-awesome-icon class="icon" icon="fa-solid fa-backward-fast" />
       </span>
@@ -21,21 +21,21 @@
 
     </div>
     <div class="title">- Consonants -</div>
-    <RunePartGrid runeType="consonants" :centerLine="centerLine" :highlite="highlite" v-on:pickRunePart="pickRunePart" v-on:highliteRune="highliteRune"/>
+    <RunePartGrid runeType="consonants" :highlite="highlite" v-on:pickRunePart="pickRunePart" v-on:highliteRune="highliteRune"/>
     <div class="title">- Vowels -</div>
-    <RunePartGrid runeType="vowels" :centerLine="centerLine" :highlite="highlite" v-on:pickRunePart="pickRunePart" v-on:highliteRune="highliteRune"/>
+    <RunePartGrid runeType="vowels" :highlite="highlite" v-on:pickRunePart="pickRunePart" v-on:highliteRune="highliteRune"/>
     <div class="title">- Swap -</div>
-    <RunePartGrid  runeType="swap" :centerLine="centerLine" :highlite="highlite" v-on:pickRunePart="pickRunePart" v-on:highliteRune="highliteRune"/>
+    <RunePartGrid  runeType="swap" :highlite="highlite" v-on:pickRunePart="pickRunePart" v-on:highliteRune="highliteRune"/>
     <div class="title">- IPA Lookup -</div>
     <TextToIPA />
   </div>
   <div class="right">
     <div class="entries">
-      <WordView :words="currentEntry" :position="position" :centerLine="centerLine" :highlite="highlite" showPhonics=true showEnglish=true v-on:highliteRune="highliteRune" v-on:selectRune="selectRune" />
+      <WordView :words="currentEntry" :position="position" :highlite="highlite" showPhonics=true showEnglish=true v-on:highliteRune="highliteRune" v-on:selectRune="selectRune" />
       <div class="entry" v-for="(entry,i) in entries" :key="entry.words">
         <div class="entryHeader">
           <span class="entryTitle">
-          {{  entry.title }}
+          {{ entry.title }}
           </span>
           <span class="entryControls">
             <font-awesome-icon class="icon" icon="fa-solid fa-angle-up" @click="moveUp(i)" />
@@ -44,7 +44,7 @@
             <font-awesome-icon class="icon" icon="fa-solid fa-trash-can" @click="deleteEntry(i)" />
           </span>
         </div>   
-        <WordView :words="entry.words" :centerLine="centerLine" :highlite="highlite" showPhonics=true showEnglish=true v-on:highliteRune="highliteRune" />
+        <WordView :words="entry.words" :highlite="highlite" showPhonics=true showEnglish=true v-on:highliteRune="highliteRune" />
       </div>
     </div>
   </div>
@@ -54,6 +54,7 @@
 import RunePartGrid from './components/RunePartGrid.vue'
 import WordView from './components/WordView.vue'
 import TextToIPA from './components/TextToIPA.vue'
+
 const example = [{ 
     title:"Example",
     words:[[[9,3,1],[17,1,0],[1,0,0],[4,6,0],[24,0,0]],[[21,8,0],[2,0,0],[17,0,0]]]
@@ -108,7 +109,7 @@ export default {
       this.store();
     },
     pickRunePart: function(rune) {
-      this.currentEntry[this.position.word][this.position.rune][rune.typeIndex] = rune.value;
+      this.currentWord[rune.typeIndex] = rune.value;
     },
     clear() {
       this.currentEntry = [[[0,0,0]]];
@@ -128,6 +129,14 @@ export default {
       }
       this.position = {word, rune};
     },
+    nextRune() {
+      if(this.currentWord.some(v => v > 0)) {
+        this.createRune();
+      } else {
+        this.delRune();
+        this.createWord();
+      }
+    },
     createRune: function() {
       if(this.currentEntry[this.position.word][this.position.rune+1]) {
         this.currentEntry[this.position.word].splice(this.position.rune+1,0,[0,0,0]);
@@ -146,7 +155,7 @@ export default {
         return;
       }
       this.currentEntry[this.position.word].splice(this.position.rune,1);
-      if(!this.currentEntry[this.position.word][this.position.rune]) {
+      if(!this.currentWord) {
         this.selectRune(this.position.word,this.position.rune-1);
       }
     },
@@ -157,20 +166,49 @@ export default {
         return;
       } 
       this.currentEntry.splice(this.position.word,1);
-      if(!this.currentEntry[this.position.word]) {
-        this.selectRune(this.position.word-1,0)
-      }else{
-        this.selectRune(this.position.word,0)
-      }
+      const newWord = !this.currentEntry[this.position.word-1] ? this.position.word: this.position.word-1;
+      this.selectRune(newWord,this.currentEntry[newWord].length-1);
     },
     highliteRune: function(rune) {
       this.highlite = rune
+    },
+    keyPress: function(e) {
+      if(e.key==' ') {
+        this.nextRune();
+      }
+      if(e.key=='Backspace') {
+        this.delRune();
+      }
+      if(e.key.match(/^[a-x]$/)) {
+        const offset = 96;
+        const num = e.key.charCodeAt(0)-offset;
+        this.currentWord[0] = this.currentWord[0] == num ? 0 : num;
+
+      }
+      if(e.key.match(/^[A-R]$/)){
+        const offset = 64;
+        const num = e.key.charCodeAt(0)-offset;
+        this.currentWord[1] = this.currentWord[1] == num ? 0 : num;
+      }
+      if(e.key=='z') {
+        this.currentWord[0] = 0;
+      }
+      if(e.key=='Z') {
+        this.currentWord[1] = 0;
+      }
+      if(e.key=='.') {
+        this.currentWord[2] = this.currentWord[2] ? 0 : 1;
+      }
+    },
+  },
+  computed: {
+    currentWord: function() {
+      return this.currentEntry[this.position.word][this.position.rune];
     }
   },
   data() {
     return {
       ready: false,
-      centerLine: true,
       highlite: [0,0,0],
       position: {
         word: 0,
@@ -181,7 +219,13 @@ export default {
       title: "",
       entries: JSON.parse(localStorage.getItem('entries')) || example
     }
-  }
+  },
+  mounted() {
+    window.addEventListener('keydown', this.keyPress);
+  },
+  unmounted() {
+    window.removeEventListener('keydown', this.keyPress);
+  },
 }
 </script>
 
@@ -197,15 +241,14 @@ body {
   -moz-osx-font-smoothing: grayscale;
   text-align: left;
   color: #2c3e50;
-  font-size: 24px;
+  font-size: 20px;
   width: 100vw;
   height: 100vh;
   display: grid;
-  grid-template-columns: 20em auto;
+  grid-template-columns: 25em auto;
 }
 
 .controls {
-  padding-top: 1em;
   display: grid;
   grid-template-columns: repeat(5, auto);
 }
@@ -218,7 +261,7 @@ body {
 }
 
 .controls > span:hover {
-    background-color: aliceblue;
+    background-color: #f0f0f0;
   }
 
 .controls > input {

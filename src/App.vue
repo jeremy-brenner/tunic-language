@@ -1,33 +1,35 @@
 <template>
   <div class="left">
+    <div class='controls'>
+      <span @click="createChar">Char +</span>
+      <span @click="createWord">Word +</span>
+      <span @click="delChar">Char -</span>
+      <span @click="delWord">Word -</span>
+      <span @click="clear">Clear</span>
+      <div>Title:</div>
+      <input type="text" v-model="title"><button @click="save">save</button>
+    </div>
     <div class="title">- Consonants -</div>
     <CharacterGrid charType="consonants" :centerLine="centerLine" :highlite="highlite" v-on:pickCharPart="pickCharPart" v-on:highliteChar="highliteChar"/>
     <div class="title">- Vowels -</div>
     <CharacterGrid charType="vowels" :centerLine="centerLine" :highlite="highlite" v-on:pickCharPart="pickCharPart" v-on:highliteChar="highliteChar"/>
     <div class="title">- Swap -</div>
     <CharacterGrid  charType="swap" :centerLine="centerLine" :highlite="highlite" v-on:pickCharPart="pickCharPart" v-on:highliteChar="highliteChar"/>
-    <div class='controls'>
-      <span @click="next">Next</span>
-      <span @click="createChar">Char +</span>
-      <span @click="createWord">Word +</span>
-      <span @click="delChar">Char -</span>
-      <span @click="delWord">Word -</span>
-      <span @click="clear">Clear</span>
-    </div>
     <div class="title">- IPA Lookup -</div>
     <TextToIPA />
   </div>
   <div class="right">
-    <div class="words">
-      <WordView :words="currentWords" :position="position" :centerLine="centerLine" :highlite="highlite" v-on:highliteChar="highliteChar" v-on:selectChar="selectChar" />
-      <WordView :words="word.words" :centerLine="centerLine" :highlite="highlite" v-on:highliteChar="highliteChar" v-for="word in words" :key="word.words" />
+    <div class="entries">
+      <WordView :words="currentEntry" :position="position" :centerLine="centerLine" :highlite="highlite" v-on:highliteChar="highliteChar" v-on:selectChar="selectChar" />
+      <div class="entry" v-for="entry in entries" :key="entry.words">
+        <div class="title">{{  entry.title }}</div>
+        <WordView :words="entry.words" :centerLine="centerLine" :highlite="highlite" v-on:highliteChar="highliteChar" />
+      </div>
     </div>
   </div>
 </template>
 
 <script>
-const words = require('./words.json');
-
 import CharacterGrid from './components/CharPartGrid.vue'
 import WordView from './components/WordView.vue'
 import TextToIPA from './components/TextToIPA.vue'
@@ -40,63 +42,63 @@ export default {
     TextToIPA,
   },
   methods: {
+    save: function() {
+      this.entries = [{entries: this.currentEntry, title: this.title}, ...this.entries];
+     // localStorage.setItem('words', JSON.stringify(this.words));
+      localStorage.setItem('entries', JSON.stringify(this.entries));
+
+      this.clear();
+    },
     pickCharPart: function(char) {
-      this.currentWords[this.position.word][this.position.char][char.typeIndex] = char.value;
+      this.currentEntry[this.position.word][this.position.char][char.typeIndex] = char.value;
     },
     clear() {
-      this.currentWords = [[[0,0,0]]];
+      this.currentEntry = [[[0,0,0]]];
       this.position = {
         word: 0,
         char: 0
       }
+      this.title = ""
     },
     selectChar(word,char) {
-      if(!this.currentWords[word]) {
-        this.currentWords[word] = [];
+      if(!this.currentEntry[word]) {
+        this.currentEntry[word] = [];
       }
-      if(!this.currentWords[word][char]) {
-        this.currentWords[word][char] = [0,0,0];
+      if(!this.currentEntry[word][char]) {
+        this.currentEntry[word][char] = [0,0,0];
       }
       this.position = {word, char};
     },
-    next: function() {
-      if(this.currentWords[this.position.word][this.position.char].some(i => i>0)) {
-        this.createChar();
-        return;
-      }
-      this.delChar();
-      this.createWord();
-    },
     createChar: function() {
-      if(this.currentWords[this.position.word][this.position.char+1]) {
-        this.currentWords[this.position.word].splice(this.position.char+1,0,[0,0,0]);
+      if(this.currentEntry[this.position.word][this.position.char+1]) {
+        this.currentEntry[this.position.word].splice(this.position.char+1,0,[0,0,0]);
       }
       this.selectChar(this.position.word,this.position.char+1);
     },
     createWord: function() {
-      if(this.currentWords[this.position.word+1]) {
-        this.currentWords.splice(this.position.word+1,0,[]);
+      if(this.currentEntry[this.position.word+1]) {
+        this.currentEntry.splice(this.position.word+1,0,[]);
       }
       this.selectChar(this.position.word+1,0);
     },
     delChar: function() {
-      if( this.currentWords[this.position.word].length == 1 ){
+      if( this.currentEntry[this.position.word].length == 1 ){
         this.delWord();
         return;
       }
-      this.currentWords[this.position.word].splice(this.position.char,1);
-      if(!this.currentWords[this.position.word][this.position.char]) {
+      this.currentEntry[this.position.word].splice(this.position.char,1);
+      if(!this.currentEntry[this.position.word][this.position.char]) {
         this.selectChar(this.position.word,this.position.char-1);
       }
     },
     delWord: function() {
-      if( this.currentWords.length == 1 ){
-        this.currentWords = [];
+      if( this.currentEntry.length == 1 ){
+        this.currentEntry = [];
         this.selectChar(0,0);
         return;
       } 
-      this.currentWords.splice(this.position.word,1);
-      if(!this.currentWords[this.position.word]) {
+      this.currentEntry.splice(this.position.word,1);
+      if(!this.currentEntry[this.position.word]) {
         this.selectChar(this.position.word-1,0)
       }else{
         this.selectChar(this.position.word,0)
@@ -115,8 +117,9 @@ export default {
         word: 0,
         char: 0
       },
-      currentWords: [[[0,0,0]]],
-      words
+      currentEntry: [[[0,0,0]]],
+      title: "",
+      entries: JSON.parse(localStorage.getItem('entries'))
     }
   }
 }
@@ -141,19 +144,25 @@ body {
   grid-template-columns: 25em auto;
 }
 
-.title {
-  text-align: center;
-}
-
 .controls {
   padding-top: 1em;
+  display: grid;
+  grid-template-columns: repeat(5, auto);
 }
 
-.controls span {
-  display: inline-block;
+.controls > span {
   border: 1px solid grey;
-  width: 4em;
   text-align: center;
+  cursor: pointer;
+  user-select: none; 
+}
+
+.controls > input {
+  grid-column: span 3; 
+}
+
+.controls > div {
+  text-align: right;
 }
 
 .left, .right {
@@ -166,9 +175,18 @@ body {
 
 }
 
-.words {
+.entries {
   height: 100%;
   overflow-x: auto;
   overflow-y: auto;
+}
+
+.entry {
+  padding-top: 1em;
+}
+
+.entry > .title {
+  font-weight: bold;
+  padding-bottom: 0.25em;
 }
 </style>

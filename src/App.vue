@@ -5,10 +5,11 @@
     <CharacterGrid title="Vowels" charType="vowels" :centerLine="centerLine" :highlite="highlite" v-on:pickCharPart="pickCharPart" v-on:highliteChar="highliteChar"/>
     <CharacterGrid title="Swap" charType="swap" :centerLine="centerLine" :highlite="highlite" v-on:pickCharPart="pickCharPart" v-on:highliteChar="highliteChar"/>
     <div class='controls'>
-      <span @click="createChar">Char+</span>
-      <span @click="createWord">Word+</span>
-      <span @click="delChar">Char-</span>
-      <span @click="delWord">Word-</span>
+      <span @click="next">Next</span>
+      <span @click="createChar">Char +</span>
+      <span @click="createWord">Word +</span>
+      <span @click="delChar">Char -</span>
+      <span @click="delWord">Word -</span>
       <span @click="clear">Clear</span>
     </div>
     <WordView :words="currentWords" :position="position" :centerLine="centerLine" :highlite="highlite" v-on:highliteChar="highliteChar" v-on:selectChar="selectChar" />
@@ -56,6 +57,14 @@ export default {
         this.currentWords[word][char] = [0,0,0];
       }
       this.position = {word, char};
+    },
+    next: function() {
+      if(this.currentWords[this.position.word][this.position.char].some(i => i>0)) {
+        this.createChar();
+        return;
+      }
+      this.delChar();
+      this.createWord();
     },
     createChar: function() {
       if(this.currentWords[this.position.word][this.position.char+1]) {
@@ -120,7 +129,6 @@ export default {
   text-align: left;
   color: #2c3e50;
   font-size: 24px;
-  margin: 1em;
 }
 .controls {
   margin-top: 2em;
@@ -128,7 +136,7 @@ export default {
 .controls span {
   display: inline-block;
   border: 1px solid grey;
-  width: 3em;
+  width: 4em;
   text-align: center;
 }
 .left, .right {
@@ -137,8 +145,10 @@ export default {
   display: inline-block;
 }
 .words {
-  overflow-x: hidden;
+  overflow-x: auto;
   overflow-y: auto;
-  height: 500px;
+  height: 75vh;
+  width: 50vw;
+  margin-top: 1em;
 }
 </style>

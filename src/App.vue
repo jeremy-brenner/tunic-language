@@ -3,19 +3,19 @@
     <div class='controls'>
       <div>Title:</div>
       <input type="text" v-model="title"><button @click="save">save</button>
-      <span @click="delWord">
+      <span @click="delWord" title="Delete Word">
         <font-awesome-icon class="icon" icon="fa-solid fa-backward-fast" />
       </span>
-      <span @click="delRune">
+      <span @click="delRune" title="Delete Rune">
         <font-awesome-icon class="icon" icon="fa-solid fa-backward-step" />
       </span>
-      <span @click="createRune">
+      <span @click="createRune" title="Create Rune">
         <font-awesome-icon class="icon" icon="fa-solid fa-forward-step" />
       </span>
-      <span @click="createWord">
+      <span @click="createWord" title="Create Word">
         <font-awesome-icon class="icon" icon="fa-solid fa-forward-fast" />
       </span>
-      <span @click="clear">
+      <span @click="clear" title="Clear All">
         <font-awesome-icon class="icon" icon="fa-solid fa-dumpster-fire" />
       </span>
 

@@ -5,7 +5,9 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint"
+    "lint": "vue-cli-service lint",
+    "upload": "aws s3 sync ./dist/ s3://${TUNIC_S3_BUCKET} --delete",
+    "invalidate": "aws cloudfront create-invalidation --distribution-id ${TUNIC_CLOUDFRONT_ID} --paths \"/*\""
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.2.1",

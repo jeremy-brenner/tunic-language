@@ -7,7 +7,8 @@
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
     "upload": "aws s3 sync ./dist/ s3://${TUNIC_S3_BUCKET} --delete",
-    "invalidate": "aws cloudfront create-invalidation --distribution-id ${TUNIC_CLOUDFRONT_ID} --paths \"/*\""
+    "invalidate": "aws cloudfront create-invalidation --distribution-id ${TUNIC_CLOUDFRONT_ID} --paths \"/*\"",
+    "publish": "npm run build; npm run upload; npm run invalidate"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.2.1",

@@ -1,111 +1,167 @@
 <template>
   <div class="left">
     <div class='controls'>
-      <span @click="createChar">Char +</span>
-      <span @click="createWord">Word +</span>
-      <span @click="delChar">Char -</span>
-      <span @click="delWord">Word -</span>
-      <span @click="clear">Clear</span>
       <div>Title:</div>
       <input type="text" v-model="title"><button @click="save">save</button>
+      <span @click="delWord">
+        <font-awesome-icon class="icon" icon="fa-solid fa-backward-fast" />
+      </span>
+      <span @click="delRune">
+        <font-awesome-icon class="icon" icon="fa-solid fa-backward-step" />
+      </span>
+      <span @click="createRune">
+        <font-awesome-icon class="icon" icon="fa-solid fa-forward-step" />
+      </span>
+      <span @click="createWord">
+        <font-awesome-icon class="icon" icon="fa-solid fa-forward-fast" />
+      </span>
+      <span @click="clear">
+        <font-awesome-icon class="icon" icon="fa-solid fa-dumpster-fire" />
+      </span>
+
     </div>
     <div class="title">- Consonants -</div>
-    <CharacterGrid charType="consonants" :centerLine="centerLine" :highlite="highlite" v-on:pickCharPart="pickCharPart" v-on:highliteChar="highliteChar"/>
+    <RunePartGrid runeType="consonants" :centerLine="centerLine" :highlite="highlite" v-on:pickRunePart="pickRunePart" v-on:highliteRune="highliteRune"/>
     <div class="title">- Vowels -</div>
-    <CharacterGrid charType="vowels" :centerLine="centerLine" :highlite="highlite" v-on:pickCharPart="pickCharPart" v-on:highliteChar="highliteChar"/>
+    <RunePartGrid runeType="vowels" :centerLine="centerLine" :highlite="highlite" v-on:pickRunePart="pickRunePart" v-on:highliteRune="highliteRune"/>
     <div class="title">- Swap -</div>
-    <CharacterGrid  charType="swap" :centerLine="centerLine" :highlite="highlite" v-on:pickCharPart="pickCharPart" v-on:highliteChar="highliteChar"/>
+    <RunePartGrid  runeType="swap" :centerLine="centerLine" :highlite="highlite" v-on:pickRunePart="pickRunePart" v-on:highliteRune="highliteRune"/>
     <div class="title">- IPA Lookup -</div>
     <TextToIPA />
   </div>
   <div class="right">
     <div class="entries">
-      <WordView :words="currentEntry" :position="position" :centerLine="centerLine" :highlite="highlite" v-on:highliteChar="highliteChar" v-on:selectChar="selectChar" />
-      <div class="entry" v-for="entry in entries" :key="entry.words">
-        <div class="title">{{  entry.title }}</div>
-        <WordView :words="entry.words" :centerLine="centerLine" :highlite="highlite" v-on:highliteChar="highliteChar" />
+      <WordView :words="currentEntry" :position="position" :centerLine="centerLine" :highlite="highlite" showPhonics=true showEnglish=true v-on:highliteRune="highliteRune" v-on:selectRune="selectRune" />
+      <div class="entry" v-for="(entry,i) in entries" :key="entry.words">
+        <div class="entryHeader">
+          <span class="entryTitle">
+          {{  entry.title }}
+          </span>
+          <span class="entryControls">
+            <font-awesome-icon class="icon" icon="fa-solid fa-angle-up" @click="moveUp(i)" />
+            <font-awesome-icon class="icon" icon="fa-solid fa-angle-down" @click="moveDown(i)" />
+            <font-awesome-icon class="icon" icon="fa-solid fa-pencil" @click="editEntry(i)" />
+            <font-awesome-icon class="icon" icon="fa-solid fa-trash-can" @click="deleteEntry(i)" />
+          </span>
+        </div>   
+        <WordView :words="entry.words" :centerLine="centerLine" :highlite="highlite" showPhonics=true showEnglish=true v-on:highliteRune="highliteRune" />
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import CharacterGrid from './components/CharPartGrid.vue'
+import RunePartGrid from './components/RunePartGrid.vue'
 import WordView from './components/WordView.vue'
 import TextToIPA from './components/TextToIPA.vue'
 
 export default {
   name: 'App',
   components: {
-    CharacterGrid,
+    RunePartGrid,
     WordView,
     TextToIPA,
   },
   methods: {
-    save: function() {
-      this.entries = [{entries: this.currentEntry, title: this.title}, ...this.entries];
-     // localStorage.setItem('words', JSON.stringify(this.words));
+    store: function() {
       localStorage.setItem('entries', JSON.stringify(this.entries));
-
+    },
+    save: function() {
+      const entry =  {title: this.title, words: this.currentEntry}
+      if(this.editingIndex == -1) {
+        this.entries = [entry, ...this.entries];
+      } else {
+        this.entries[this.editingIndex] = entry;
+      }
+      this.store();
       this.clear();
     },
-    pickCharPart: function(char) {
-      this.currentEntry[this.position.word][this.position.char][char.typeIndex] = char.value;
+    moveUp(i) {
+      if(i == 0) {
+        return;
+      }
+      const moving = this.entries[i];
+      this.entries[i] = this.entries[i-1];
+      this.entries[i-1] = moving;
+      this.store();
+    },
+    moveDown(i) {
+      if(i == this.entries.length - 1) {
+        return;
+      }
+      const moving = this.entries[i];
+      this.entries[i] = this.entries[i+1];
+      this.entries[i+1] = moving;
+      this.store();
+    },
+    editEntry(i) {
+      this.clear();
+      this.currentEntry = JSON.parse(JSON.stringify(this.entries[i].words));
+      this.title = this.entries[i].title;
+      this.editingIndex = i;
+    },
+    deleteEntry(i) {
+      this.entries.splice(i,1);
+      this.store();
+    },
+    pickRunePart: function(rune) {
+      this.currentEntry[this.position.word][this.position.rune][rune.typeIndex] = rune.value;
     },
     clear() {
       this.currentEntry = [[[0,0,0]]];
       this.position = {
         word: 0,
-        char: 0
+        rune: 0
       }
-      this.title = ""
+      this.title = "";
+      this.editingIndex = -1;
     },
-    selectChar(word,char) {
+    selectRune(word,rune) {
       if(!this.currentEntry[word]) {
         this.currentEntry[word] = [];
       }
-      if(!this.currentEntry[word][char]) {
-        this.currentEntry[word][char] = [0,0,0];
+      if(!this.currentEntry[word][rune]) {
+        this.currentEntry[word][rune] = [0,0,0];
       }
-      this.position = {word, char};
+      this.position = {word, rune};
     },
-    createChar: function() {
-      if(this.currentEntry[this.position.word][this.position.char+1]) {
-        this.currentEntry[this.position.word].splice(this.position.char+1,0,[0,0,0]);
+    createRune: function() {
+      if(this.currentEntry[this.position.word][this.position.rune+1]) {
+        this.currentEntry[this.position.word].splice(this.position.rune+1,0,[0,0,0]);
       }
-      this.selectChar(this.position.word,this.position.char+1);
+      this.selectRune(this.position.word,this.position.rune+1);
     },
     createWord: function() {
       if(this.currentEntry[this.position.word+1]) {
         this.currentEntry.splice(this.position.word+1,0,[]);
       }
-      this.selectChar(this.position.word+1,0);
+      this.selectRune(this.position.word+1,0);
     },
-    delChar: function() {
+    delRune: function() {
       if( this.currentEntry[this.position.word].length == 1 ){
         this.delWord();
         return;
       }
-      this.currentEntry[this.position.word].splice(this.position.char,1);
-      if(!this.currentEntry[this.position.word][this.position.char]) {
-        this.selectChar(this.position.word,this.position.char-1);
+      this.currentEntry[this.position.word].splice(this.position.rune,1);
+      if(!this.currentEntry[this.position.word][this.position.rune]) {
+        this.selectRune(this.position.word,this.position.rune-1);
       }
     },
     delWord: function() {
       if( this.currentEntry.length == 1 ){
         this.currentEntry = [];
-        this.selectChar(0,0);
+        this.selectRune(0,0);
         return;
       } 
       this.currentEntry.splice(this.position.word,1);
       if(!this.currentEntry[this.position.word]) {
-        this.selectChar(this.position.word-1,0)
+        this.selectRune(this.position.word-1,0)
       }else{
-        this.selectChar(this.position.word,0)
+        this.selectRune(this.position.word,0)
       }
     },
-    highliteChar: function(char) {
-      this.highlite = char
+    highliteRune: function(rune) {
+      this.highlite = rune
     }
   },
   data() {
@@ -115,9 +171,10 @@ export default {
       highlite: [0,0,0],
       position: {
         word: 0,
-        char: 0
+        rune: 0
       },
       currentEntry: [[[0,0,0]]],
+      editingIndex: -1,
       title: "",
       entries: JSON.parse(localStorage.getItem('entries'))
     }
@@ -141,7 +198,7 @@ body {
   width: 100vw;
   height: 100vh;
   display: grid;
-  grid-template-columns: 25em auto;
+  grid-template-columns: 20em auto;
 }
 
 .controls {
@@ -157,6 +214,10 @@ body {
   user-select: none; 
 }
 
+.controls > span:hover {
+    background-color: aliceblue;
+  }
+
 .controls > input {
   grid-column: span 3; 
 }
@@ -171,8 +232,9 @@ body {
   padding: 1em;
 }
 
-.left {
-
+.left .title {
+  text-align: center;
+  padding-top: 0.5em;
 }
 
 .entries {
@@ -185,8 +247,29 @@ body {
   padding-top: 1em;
 }
 
-.entry > .title {
-  font-weight: bold;
+.entryHeader {
   padding-bottom: 0.25em;
 }
+
+.entryTitle {
+  font-weight: bold;
+}
+
+.entryControls {
+  float: right;
+  margin-right: 1em;
+}
+.entryControls > .icon {
+  padding-right: 0.25em;
+}
+
+.icon {
+  width: 1.25em;
+  padding-top: 0.3em;
+}
+
+input, button {
+  font-size: 0.8em;
+}
+
 </style>

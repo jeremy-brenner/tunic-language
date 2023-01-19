@@ -1,5 +1,5 @@
 <template>
-  <div class="char">
+  <div class="rune">
     <div class='centerLine' v-if="renderCenterLine"></div>
      <div class="dot" v-if="renderDot"></div> 
     <div  class="rotated" :class="classObject" >
@@ -13,15 +13,15 @@
   </div>
 </template>
 <script>
-const charDefs = require('../charDefs.json');
+const runeDefs = require('../runeDefs.json');
 
 export default {
-  name: 'TunicChar',
+  name: 'TunicRune',
   components: {
     
   },
   props: {
-    char: {
+    rune: {
       type: Array,
       required: true,
     },
@@ -37,24 +37,24 @@ export default {
   },
   computed: {
     renderDot() {
-      return this.char[2] && this.char[2] === 1;
+      return this.rune[2] && this.rune[2] === 1;
     },
     renderCenterLine() {
       return this.centerLine;
     },
     classObject() {
-      const consonantDef = charDefs.consonants[this.char[0]]?.def || [];
-      const vowelDef = charDefs.vowels[this.char[1]]?.def || [];
+      const consonantDef = runeDefs.consonants[this.rune[0]]?.def || [];
+      const vowelDef = runeDefs.vowels[this.rune[1]]?.def || [];
       return [...consonantDef, ...vowelDef];
     },
     innerHighlite() {
-      return this.highlite[0] > 0 && this.highlite[0] == this.char[0];
+      return this.highlite[0] > 0 && this.highlite[0] == this.rune[0];
     },
     outerHighlite() {
-      return this.highlite[1] > 0 && this.highlite[1] == this.char[1];
+      return this.highlite[1] > 0 && this.highlite[1] == this.rune[1];
     },
     swapHighlite() {
-      return this.highlite[2] > 0 && this.highlite[2] == this.char[2];
+      return this.highlite[2] > 0 && this.highlite[2] == this.rune[2];
     },
     innerColor() {
       return this.innerHighlite ? this.highliteColor : "currentcolor"
@@ -77,7 +77,7 @@ export default {
 </script>
   
 <style scoped>
-  .char {
+  .rune {
     --face-height: calc(v-bind(edgeLen)*1.5);
     position: relative;
     display: inline-block;

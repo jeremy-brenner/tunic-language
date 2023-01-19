@@ -1,15 +1,25 @@
 <template>
-  <input type="text" @keyup.enter="lookup"  v-model="word"><button @click="lookup">GO</button>
-  <div class="output" v-for="result in results" :key="result.word"> {{  result.phoneme }} </div>
+  <div id="ipaLookup">
+    <input type="text" @keyup.enter="lookup"  v-model="word"><button @click="lookup">GO</button>
+    <div class="output" v-for="result in results" :key="result.word">
+      <span class="phoneme">
+        {{ result.phoneme }} 
+      </span>
+      <span class="runes">
+        <IPAToRunes :ipa="result.phoneme" />
+      </span>
+    </div>
+  </div>
 </template>
 <script>
 
 const dict = require('../dict.json');
+import IPAToRunes from './IPAToRunes.vue';
 
 export default {
   name: 'TextToIPA',
   components: {
-    
+    IPAToRunes
   },
   methods: {
     lookup: function () {
@@ -26,7 +36,23 @@ export default {
 }
 </script>
 <style scoped>
+  #ipaLookup {
+    display: grid;
+    grid-template-columns: repeat(6,auto);
+  }
+
+  input {
+    grid-column: span 5;
+  }
   .output {
     border: 1px solid grey;
+    grid-column: span 6;
+  }
+  .phoneme {
+    padding-right: 1em;
+  }
+
+  .runes {
+     display: inline-block;
   }
 </style>

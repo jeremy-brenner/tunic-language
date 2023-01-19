@@ -148,6 +148,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    margin-left: -0.1em;
   }
 
 </style>

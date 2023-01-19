@@ -54,7 +54,10 @@
 import RunePartGrid from './components/RunePartGrid.vue'
 import WordView from './components/WordView.vue'
 import TextToIPA from './components/TextToIPA.vue'
-
+const example = [{ 
+    title:"Example",
+    words:[[[9,3,1],[17,1,0],[1,0,0],[4,6,0],[24,0,0]],[[21,8,0],[2,0,0],[17,0,0]]]
+}];
 export default {
   name: 'App',
   components: {
@@ -176,7 +179,7 @@ export default {
       currentEntry: [[[0,0,0]]],
       editingIndex: -1,
       title: "",
-      entries: JSON.parse(localStorage.getItem('entries'))
+      entries: JSON.parse(localStorage.getItem('entries')) || example
     }
   }
 }

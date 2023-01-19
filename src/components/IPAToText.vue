@@ -16,7 +16,7 @@ export default {
 
       const matches = {} 
       dict
-        .filter(({phoneme}) => (phoneme || "").replace('ˈ','') == this.ipa)
+        .filter(({phoneme}) => (phoneme || "").replace('ˈ','').replace('ˌ','') == this.ipa)
         .map(({word}) => word.replace(reg,''))
         .forEach(word => matches[word] = true );
       return Object.keys(matches);

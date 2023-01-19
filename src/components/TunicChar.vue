@@ -41,12 +41,6 @@ export default {
     }
   },
   computed: {
-    edgeLen() {
-      return this.isSpace ? '0.2em' : '0.5em';
-    },
-    isSpace() {
-      return this.char[0] == 0 && this.char[1] == 0;
-    },
     renderDot() {
       return this.char[2] && this.char[2] === 1;
     },
@@ -54,7 +48,7 @@ export default {
       return this.centerLine && !this.isSpace;
     },
     classObject() {
-      return [...charDefs.inner[this.char[0]], ...charDefs.outer[this.char[1]]];
+      return [...charDefs.consonants[this.char[0]], ...charDefs.vowels[this.char[1]]];
     },
     innerHighlite() {
       return this.highlite[0] > 0 && this.highlite[0] == this.char[0];
@@ -74,7 +68,8 @@ export default {
   },
   data() {
     return {
-      borderWidth: '0.1em'
+      edgeLen: '0.6em',
+      borderWidth: '0.125em'
     }
   },
 }

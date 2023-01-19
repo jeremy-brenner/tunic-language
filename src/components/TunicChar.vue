@@ -34,21 +34,18 @@ export default {
       required: false,
       default: true
     },
-    highliteColor: {
-      type: String,
-      required: false,
-      default: "red"
-    }
   },
   computed: {
     renderDot() {
       return this.char[2] && this.char[2] === 1;
     },
     renderCenterLine() {
-      return this.centerLine && !this.isSpace;
+      return this.centerLine;
     },
     classObject() {
-      return [...charDefs.consonants[this.char[0]], ...charDefs.vowels[this.char[1]]];
+      const consonantDef = charDefs.consonants[this.char[0]]?.def || [];
+      const vowelDef = charDefs.vowels[this.char[1]]?.def || [];
+      return [...consonantDef, ...vowelDef];
     },
     innerHighlite() {
       return this.highlite[0] > 0 && this.highlite[0] == this.char[0];
@@ -56,20 +53,24 @@ export default {
     outerHighlite() {
       return this.highlite[1] > 0 && this.highlite[1] == this.char[1];
     },
+    swapHighlite() {
+      return this.highlite[2] > 0 && this.highlite[2] == this.char[2];
+    },
     innerColor() {
       return this.innerHighlite ? this.highliteColor : "currentcolor"
     },
     outerColor() {
       return this.outerHighlite ? this.highliteColor : "currentcolor"
     },
-    centerColor() {
-      return this.innerHighlite || this.outerHighlite ? this.highliteColor : "currentcolor"
-    }
+    swapColor() {
+      return this.swapHighlite ? this.highliteColor : "currentcolor"
+    },
   },
   data() {
     return {
       edgeLen: '0.6em',
-      borderWidth: '0.125em'
+      borderWidth: '0.13em',
+      highliteColor: 'green'
     }
   },
 }
@@ -82,8 +83,9 @@ export default {
     display: inline-block;
     width: calc(v-bind(edgeLen)*1.3);
     height: calc(var(--face-height)*1.3);
+    margin-top: 0.2em;
     margin-bottom: -0.2em;
-    filter: blur(0.015em);
+    filter: blur(0.02em);
 
   }
   .rotated {
@@ -106,7 +108,7 @@ export default {
     border-width: calc(v-bind(borderWidth)*0.7); 
     box-sizing: content-box;
     border-style: solid none none none;
-    border-top-color: v-bind(centerColor);
+    border-top-color: 'currentcolor';
     background-color: white;
     border-bottom-width: 0;
   }
@@ -122,7 +124,7 @@ export default {
     border-width: calc(v-bind(borderWidth)*0.7); 
     box-sizing: content-box;
     border-style: solid;
-    border-color: v-bind(centerColor);
+    border-color: v-bind(swapColor);
     border-radius: 100%; 
   }
   .rotated div {

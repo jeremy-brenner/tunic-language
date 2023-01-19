@@ -4,6 +4,8 @@
 </template>
 <script>
 
+const dict = require('../dict.json');
+
 export default {
   name: 'TextToIPA',
   components: {
@@ -12,26 +14,15 @@ export default {
   methods: {
     lookup: function () {
       const reg = new RegExp(`^${this.word}(\\([1-9]\\))?$`);
-      this.results = this.dict.filter(({word}) => word.match(reg));
+      this.results = dict.filter(({word}) => word.match(reg));
     },
   },
   data() {
     return {
-      dict: [],
       word: "",
       results: []
     }
   },
-  mounted() {
-    fetch('./ipadict.txt')
-      .then((result) => result.text())
-      .then((data) => data.split("\n") )
-      .then((lines) => lines
-        .map( line => line.split(/\s+/))
-        .map( ([word,phoneme]) => ({word,phoneme}) )
-      )
-      .then((parsed) => this.dict = parsed);
-  }
 }
 </script>
 <style scoped>

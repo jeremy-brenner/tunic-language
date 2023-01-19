@@ -1,8 +1,11 @@
 <template>
   <div class="left">
-    <CharacterGrid title="Consonants" charType="consonants" :centerLine="centerLine" :highlite="highlite" v-on:pickCharPart="pickCharPart" v-on:highliteChar="highliteChar"/>
-    <CharacterGrid title="Vowels" charType="vowels" :centerLine="centerLine" :highlite="highlite" v-on:pickCharPart="pickCharPart" v-on:highliteChar="highliteChar"/>
-    <CharacterGrid title="Swap" charType="swap" :centerLine="centerLine" :highlite="highlite" v-on:pickCharPart="pickCharPart" v-on:highliteChar="highliteChar"/>
+    <div class="title">- Consonants -</div>
+    <CharacterGrid charType="consonants" :centerLine="centerLine" :highlite="highlite" v-on:pickCharPart="pickCharPart" v-on:highliteChar="highliteChar"/>
+    <div class="title">- Vowels -</div>
+    <CharacterGrid charType="vowels" :centerLine="centerLine" :highlite="highlite" v-on:pickCharPart="pickCharPart" v-on:highliteChar="highliteChar"/>
+    <div class="title">- Swap -</div>
+    <CharacterGrid  charType="swap" :centerLine="centerLine" :highlite="highlite" v-on:pickCharPart="pickCharPart" v-on:highliteChar="highliteChar"/>
     <div class='controls'>
       <span @click="next">Next</span>
       <span @click="createChar">Char +</span>
@@ -11,10 +14,12 @@
       <span @click="delWord">Word -</span>
       <span @click="clear">Clear</span>
     </div>
-    <WordView :words="currentWords" :position="position" :centerLine="centerLine" :highlite="highlite" v-on:highliteChar="highliteChar" v-on:selectChar="selectChar" />
+    <div class="title">- IPA Lookup -</div>
+    <TextToIPA />
   </div>
   <div class="right">
     <div class="words">
+      <WordView :words="currentWords" :position="position" :centerLine="centerLine" :highlite="highlite" v-on:highliteChar="highliteChar" v-on:selectChar="selectChar" />
       <WordView :words="word.words" :centerLine="centerLine" :highlite="highlite" v-on:highliteChar="highliteChar" v-for="word in words" :key="word.words" />
     </div>
   </div>
@@ -25,12 +30,14 @@ const words = require('./words.json');
 
 import CharacterGrid from './components/CharPartGrid.vue'
 import WordView from './components/WordView.vue'
+import TextToIPA from './components/TextToIPA.vue'
 
 export default {
   name: 'App',
   components: {
     CharacterGrid,
     WordView,
+    TextToIPA,
   },
   methods: {
     pickCharPart: function(char) {
@@ -134,7 +141,12 @@ body {
   grid-template-columns: 25em auto;
 }
 
+.title {
+  text-align: center;
+}
+
 .controls {
+  padding-top: 1em;
 }
 
 .controls span {

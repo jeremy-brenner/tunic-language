@@ -1,6 +1,5 @@
 <template>
   <div class="charGrid">
-    <div class="head">- {{ title }} -</div>
     <span
       @click="click(i)"
       @mouseover="mouseOver(wordChars[i])"
@@ -8,8 +7,8 @@
       v-for="(char,i) in chars" :key="i"
     >
       <TunicChar :char="wordChars[i]" :centerLine="centerLine" :highlite="highlite"/>
-      <span class="phoneme" :class="{ missing: !char.phoneme }">
-        {{ char.phoneme || i }}
+      <span class="phoneme">
+        {{ char.phoneme }}
       </span>
     </span>
   </div>
@@ -28,7 +27,7 @@
         chars: charDefs[this.charType],
       }
     },
-    props: ['title','charType', 'highlite', 'centerLine'],
+    props: ['charType', 'highlite', 'centerLine'],
     emits: ['pickCharPart', 'highliteChar'],
     computed: {
       typeIndex: function() {
@@ -73,28 +72,25 @@
 </script>
 <style scoped>
 
-  .charGrid .head {
-    text-align: center;
-    grid-column: span 6;
-  }
-
   .charGrid {
     display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(3.5em,auto));
+    border-top: 1px solid gray;
+    border-left: 1px solid gray;
   }
 
   .charGrid > span {
     padding-left: 0.5em;
     line-height: 1.5em;
-    border: 1px solid gray;
+    border-right: 1px solid gray;
+    border-bottom: 1px solid gray;
+
   }
 
   .phoneme {
     display: inline-block;
     width: 1.25em;
     padding-left: 0.5em;
-  }
-  .missing {
-    color: #ff0000;
   }
 
 </style>

@@ -84,7 +84,7 @@ export default {
     width: calc(v-bind(edgeLen)*1.3);
     height: calc(var(--face-height)*1.3);
     margin-top: 0.2em;
-    margin-bottom: -0.2em;
+    margin-bottom: -0.1em;
     filter: blur(0.02em);
 
   }

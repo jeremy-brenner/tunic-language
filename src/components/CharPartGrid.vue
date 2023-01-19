@@ -81,7 +81,6 @@
   .charGrid {
     margin-top: 20px;
     display: grid;
-    grid-template-columns: 4em 4em 4em 4em 4em 4em;
   }
 
   .charGrid > span {

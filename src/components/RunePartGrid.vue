@@ -130,6 +130,8 @@
   .trash {
     display: inline-grid;
     grid-column: span 3;
+    align-items: center;
+    justify-content: center;
   }
 
   .swap {

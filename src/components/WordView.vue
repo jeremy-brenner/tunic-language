@@ -70,10 +70,6 @@ export default {
 </script>
 <style scoped>
 
-.wordview {
-  padding-top: 1em;
-}
-
 .wordview .head {
   text-align: center;
   font-size: 22px;

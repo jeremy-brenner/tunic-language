@@ -84,7 +84,8 @@
     line-height: 1.5em;
     border-right: 1px solid gray;
     border-bottom: 1px solid gray;
-
+    cursor: pointer;
+    user-select: none;
   }
 
   .phoneme {

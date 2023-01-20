@@ -14,6 +14,9 @@ const promises = {
   word: {}
 }
 
+const wordCleanReg = new RegExp(`(\\([1-9]\\))?$`);
+
+
 function getDict(type,letter) {
   if(locks[type][letter]) {
     return new Promise((res) => {
@@ -33,10 +36,14 @@ function getDict(type,letter) {
         return [];
     })
     .then( dict => { 
-        dicts[type][letter] = dict;
+        dicts[type][letter] = dict.map(entry => {
+          const phoneme = (entry.phoneme || "").replaceAll('ˈ','').replaceAll('ˌ','');
+          const word = entry.word.replace(wordCleanReg,'');
+          return {phoneme, word}
+        });
         locks[type][letter] = false;
-        promises[type][letter].forEach( res => res(dict));
-        return dict; 
+        promises[type][letter].forEach( res => res(dicts[type][letter] ));
+        return dicts[type][letter]; 
     });
 }
 

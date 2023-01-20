@@ -3,6 +3,7 @@
 </template>
 <script>
 import { getDict } from  '../lib/dict';
+const runeDefs = require('../runeDefs.json');
 
 export default {
   name: 'IPAToText',
@@ -16,30 +17,46 @@ export default {
     }
   },
   computed: {
+    searchWords: function() {
+      const searchWords = {
+        [this.ipa]: true
+      };
+      runeDefs.alternates.forEach(([ak,av]) => {
+        searchWords[this.ipa.replaceAll(ak,av)] = true;
+      });
+      return Object.keys(searchWords);
+    },
+    firstLetters: function() {
+      return this.searchWords.map(w => w[0]).filter((value, index, self) => self.indexOf(value) === index );
+    },
     results: function() {
-      const reg = new RegExp(`(\\([1-9]\\))?$`);
       const matches = {} 
-      this.dict.filter(({phoneme}) => (phoneme || "").replace('ˈ','').replace('ˌ','') == this.ipa)
-        .map(({word}) => word.replace(reg,''))
-        .forEach(word => matches[word] = true );
+      this.dict
+        .filter((entry) => entry.phoneme && this.searchWords.some(word => word == entry.phoneme))
+        .forEach(({word}) => matches[word] = true );
       return Object.keys(matches);
     }
   },
   methods: {
+    getDicts: function() {
+      return Promise.all(this.firstLetters.map(l => this.getDict(l)))
+        .then(dicts => {
+          this.dict = dicts.flat().filter(d => d);
+        })
+    },
     getDict: function(l) {
       if(!l) {
         return;
       }
-      getDict('phoneme', l)
-        .then(dict => this.dict=dict);
+      return getDict('phoneme', l);
     }
   },
   mounted() {
-    this.getDict(this.ipa[0]);
+    this.getDicts();
   },
   watch: {
-    'ipa'(word) {
-      this.getDict(word[0]);
+    'ipa'() {
+      this.getDicts();
     }
   }
 }

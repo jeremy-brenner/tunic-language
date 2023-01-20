@@ -8,7 +8,8 @@
     "lint": "vue-cli-service lint",
     "upload": "aws s3 sync ./dist/ s3://${TUNIC_S3_BUCKET} --delete",
     "invalidate": "aws cloudfront create-invalidation --distribution-id ${TUNIC_CLOUDFRONT_ID} --paths \"/*\"",
-    "publish": "npm run build; npm run upload; npm run invalidate"
+    "publish": "npm run build; npm run upload; npm run invalidate",
+    "tf_init": "cd terraform/main; terraform init -backend-config=\"bucket=${TFSTATE_BUCKET}\" -backend-config=\"key=${TFSTATE_KEY}\""
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.2.1",

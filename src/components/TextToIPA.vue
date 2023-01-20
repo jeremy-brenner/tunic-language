@@ -13,8 +13,8 @@
 </template>
 <script>
 
-const dict = require('../dict.json');
 import IPAToRunes from './IPAToRunes.vue';
+import { getDict } from  '../lib/dict';
 
 export default {
   name: 'TextToIPA',
@@ -23,14 +23,21 @@ export default {
   },
   methods: {
     lookup: function () {
+      const l = this.word[0];
+      if(!l) {
+        return;
+      }
       const reg = new RegExp(`^${this.word}(\\([1-9]\\))?$`);
-      this.results = dict.filter(({word}) => word.match(reg));
-    },
+      getDict('word', l)
+        .then(dict => {
+          this.results = dict.filter(({word}) => word.match(reg));
+        });
+    }
   },
   data() {
     return {
       word: "",
-      results: []
+      results: [],
     }
   },
 }

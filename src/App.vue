@@ -204,6 +204,8 @@ body {
   vertical-align: top;
   overflow: hidden;
   padding: 1em;
+  display: flex;
+  flex-direction: column;
 }
 
 .left .title {

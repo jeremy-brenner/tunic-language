@@ -1,6 +1,6 @@
 <template>
   <div id="ipaLookup">
-    <input type="text" @keyup.enter="lookup" @keydown.stop v-model="word"><button @click="lookup">GO</button>
+    <input type="search" @keyup="lookup" @search="lookup" @keydown.stop v-model="word">
     <div class="output" v-for="result in results" :key="result.word">
       <span class="phoneme">
         {{ result.phoneme }} 
@@ -23,6 +23,7 @@ export default {
   },
   methods: {
     lookup: function () {
+      this.results = [];
       const l = this.word[0];
       if(!l) {
         return;
@@ -49,7 +50,7 @@ export default {
   }
 
   input {
-    grid-column: span 5;
+    grid-column: span 6;
   }
   .output {
     border: 1px solid grey;

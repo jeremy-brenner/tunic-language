@@ -28,6 +28,7 @@
   import SVGRune from './SVGRune.vue'
   const runeDefs = require('../runeDefs.json');
   import { highlite, unhighlite } from '../lib/highlite';
+  import * as editor from '../lib/editor.js';
 
   export default {
     name: 'RunePartGrid',
@@ -86,7 +87,7 @@
         return String.fromCharCode(num+offset)
       },
       click: function (value) {
-        this.$emit('pickRunePart', {
+        editor.pickRunePart({
           typeIndex: this.typeIndex,
           value
         });

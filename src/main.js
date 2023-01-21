@@ -17,6 +17,9 @@ import {
     faCircleXmark,
     faRightLeft,
     faArrowsRotate,
+    faFloppyDisk,
+    faDownload,
+    faUpload,
 } from '@fortawesome/free-solid-svg-icons'
 
 library.add(faTrashCan)
@@ -31,6 +34,9 @@ library.add(faDumpsterFire)
 library.add(faCircleXmark)
 library.add(faRightLeft)
 library.add(faArrowsRotate)
+library.add(faFloppyDisk)
+library.add(faDownload)
+library.add(faUpload)
 
 createApp(App)
   .component('font-awesome-icon', FontAwesomeIcon)

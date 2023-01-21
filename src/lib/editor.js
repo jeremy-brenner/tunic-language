@@ -1,4 +1,5 @@
 import { Subject } from 'rxjs';
+import * as runeBook from './runeBook.js';
 
 const stateSubject$ = new Subject();
 
@@ -11,6 +12,17 @@ const state = {
   editingIndex: -1,
   title: "",
 }
+
+runeBook.indexChangeSubject$.subscribe(change => {
+  if(change[state.editingIndex]) {
+    state.editingIndex = change[state.editingIndex];
+    if(state.editingIndex == -1) {
+      clear();
+    }
+    next();
+  }
+});
+
 
 function currentWord() {
   return state.currentEntry[state.position.word];
@@ -159,8 +171,18 @@ function selectRightAction() {
   next();
 }
 
+function saveAction() {
+  runeBook.saveEntry(state.editingIndex, {title: state.title, words: state.currentEntry});
+  clear();
+  next();
+}
+
+function setTitleAction(title) {
+  state.title = title;
+  next();
+}
+
 function loadEntryAction(entry, index) {
-  console.log(entry,index);
   clear();
   state.currentEntry = JSON.parse(JSON.stringify(entry.words));
   state.title = entry.title;
@@ -183,4 +205,6 @@ export {
   selectLeftAction as selectLeft,
   selectRightAction as selectRight,
   loadEntryAction as loadEntry,
+  saveAction as save,
+  setTitleAction as setTitle
 }

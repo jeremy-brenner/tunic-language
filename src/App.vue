@@ -117,10 +117,7 @@ export default {
       this.store();
     },
     editEntry(i) {
-      editor.clear();
-      this.currentEntry = JSON.parse(JSON.stringify(this.entries[i].words));
-      this.title = this.entries[i].title;
-      this.editingIndex = i;
+      editor.loadEntry(this.entries[i],i);
     },
     deleteEntry(i) {
       this.entries.splice(i,1);
@@ -143,16 +140,20 @@ export default {
   },
   data() {
     return {
-      position: {
-        word: 0,
-        rune: 0
-      },
-      currentEntry: [[[0,0,0]]],
       editingIndex: -1,
       title: "",
       entries: JSON.parse(localStorage.getItem('entries')) || example,
-      inputSubscription$: null
+      stateSubscription$: null
     }
+  },
+  mounted() {
+    this.stateSubscription$ = editor.stateSubject$.subscribe( state => {
+      this.editingIndex = state.editingIndex;
+      this.title = state.title;
+    });
+  },
+  unmounted() {
+    this.stateSubscription$.unsubscribe();
   },
 }
 </script>

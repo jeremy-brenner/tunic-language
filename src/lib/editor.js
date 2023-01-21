@@ -3,7 +3,6 @@ import { Subject } from 'rxjs';
 const stateSubject$ = new Subject();
 
 const state = {
-  highlite: [0,0,0],
   position: {
     word: 0,
     rune: 0
@@ -160,6 +159,14 @@ function selectRightAction() {
   next();
 }
 
+function loadEntryAction(entry, index) {
+  console.log(entry,index);
+  clear();
+  state.currentEntry = JSON.parse(JSON.stringify(entry.words));
+  state.title = entry.title;
+  state.editingIndex = index;
+  next();
+}
 
 export {
   state,
@@ -174,5 +181,6 @@ export {
   pickRunePartAction as pickRunePart,
   nextRuneAction as nextRune,
   selectLeftAction as selectLeft,
-  selectRightAction as selectRight
+  selectRightAction as selectRight,
+  loadEntryAction as loadEntry,
 }

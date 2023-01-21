@@ -43,7 +43,7 @@
         trashSpan: runeDefs[this.runeType].length < 6 ? 5 : 6,
       }
     },
-    props: ['runeType', 'highlite'],
+    props: ['runeType'],
     emits: ['pickRunePart'],
     computed: {
       typeIndex: function() {

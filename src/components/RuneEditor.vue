@@ -13,14 +13,11 @@ export default {
   },
   data() {
     return {
-      highlite: [0,0,0],
       position: {
         word: 0,
         rune: 0
       },
       currentEntry: [[[0,0,0]]],
-      editingIndex: -1,
-      title: "",
       stateSubscription$: null
     }
   },
@@ -30,7 +27,10 @@ export default {
     },
   },
   mounted() {
-    this.stateSubscription$ = editor.stateSubject$.subscribe( state => Object.keys(state).forEach( k => this[k] = state[k]) );
+    this.stateSubscription$ = editor.stateSubject$.subscribe( state => {
+      this.position = state.position;
+      this.currentEntry = state.currentEntry;
+    });
   },
   unmounted() {
     this.stateSubscription$.unsubscribe();

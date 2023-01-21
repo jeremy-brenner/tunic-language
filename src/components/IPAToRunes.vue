@@ -1,5 +1,5 @@
 <template>
-   <WordView :words="[runeWord]" :highlite="highlite" />
+   <WordView :words="[runeWord]" />
 </template>
   <script>
 
@@ -18,11 +18,6 @@
       WordView
     },
     props: ['ipa'],
-    data() {
-      return {
-         highlite: [0,0,0],
-      }
-    },
     computed: {
      runeWord: function() {
         const word = [];

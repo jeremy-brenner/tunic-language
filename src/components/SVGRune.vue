@@ -8,13 +8,14 @@
 </template>
 <script>
 const runeDefs = require('../runeDefs.json');
+import { highliteSubject$ } from '../lib/highlite';
 
 export default {
   name: 'SVGRune',
   components: {
     
   },
-  props: ['rune', 'highlite'],
+  props: ['rune'],
   computed: {
     centerX: function() {
       return this.lineLength*(Math.sqrt(3)/2);
@@ -113,8 +114,17 @@ export default {
       lineLength: 100,
       strokeWidth: 24,
       highliteColor: 'green',
+      highlite: [0,0,0],
+      hightliteSubscription$: null,
     }
+  },
+  mounted() {
+    this.hightliteSubscription$ = highliteSubject$.subscribe((rune) => this.highlite = rune);
+  },
+  unmounted() {
+    this.hightliteSubscription$.unsubscribe();
   }
+
 }
 </script>
 <style scoped>

@@ -4,7 +4,6 @@
       <div class="tunic">
         <SVGRune 
           :rune="rune" 
-          :highlite="highlite" 
           @mouseover="mouseOver(rune)"
           @mouseout="mouseOut()"
           @click="click(wordNum,runeNum)"
@@ -28,14 +27,15 @@ const runeDefs = require('../runeDefs.json');
 
 import SVGRune from './SVGRune.vue'
 import IPAToText from './IPAToText.vue'
+import { highlite, unhighlite } from '../lib/highlite';
 
 export default {
   name: 'WordView',
   components: {
     SVGRune, IPAToText
   },
-  props: ['words', 'highlite', 'position', 'showPhonics', 'showEnglish'],
-  emits: ['highliteRune', 'selectRune'],
+  props: ['words', 'position', 'showPhonics', 'showEnglish'],
+  emits: ['selectRune'],
   methods: {
     phonicWord: function(word) {
       return word.map( rune => {
@@ -51,10 +51,10 @@ export default {
       return this.position.word == wordNum && this.position.rune == runeNum
     },
     mouseOver: function (rune) {
-      this.$emit('highliteRune', rune);
+      highlite(rune);
     },
     mouseOut: function() {
-      this.$emit('highliteRune', [0,0,0]);
+      unhighlite();
     },
     click: function(wordNum, runeNum) {
       this.$emit('selectRune', wordNum, runeNum);

@@ -48,6 +48,6 @@ function getDict(type,letter) {
 }
 
 
-module.exports = {
+export {
   getDict
 }

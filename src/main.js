@@ -1,6 +1,6 @@
 import { createApp } from 'vue'
 import App from './App.vue'
-
+import * as input from './lib/input';
 
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
@@ -35,3 +35,5 @@ library.add(faArrowsRotate)
 createApp(App)
   .component('font-awesome-icon', FontAwesomeIcon)
   .mount('#app')
+
+input.start();

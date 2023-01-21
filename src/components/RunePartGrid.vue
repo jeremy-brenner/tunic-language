@@ -10,7 +10,7 @@
         {{ hotKey(i) }}
       </span>     
        <span class="rune" v-if="i">
-        <SVGRune :rune="wordRunes[i]" :highlite="highlite" />
+        <SVGRune :rune="wordRunes[i]" />
       </span>
       <span class="phoneme" v-if="i && runeType != 'swap'">
           {{ rune.phoneme }}
@@ -27,6 +27,7 @@
 <script>
   import SVGRune from './SVGRune.vue'
   const runeDefs = require('../runeDefs.json');
+  import { highlite, unhighlite } from '../lib/highlite';
 
   export default {
     name: 'RunePartGrid',
@@ -43,7 +44,7 @@
       }
     },
     props: ['runeType', 'highlite'],
-    emits: ['pickRunePart', 'highliteRune'],
+    emits: ['pickRunePart'],
     computed: {
       typeIndex: function() {
         switch (this.runeType) {
@@ -91,10 +92,10 @@
         });
       },
       mouseOver: function (rune) {
-        this.$emit('highliteRune', rune)
+        highlite(rune);
       },
       mouseOut: function() {
-        this.$emit('highliteRune', [0,0,0])
+        unhighlite();
       },
     }
 

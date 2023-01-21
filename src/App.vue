@@ -18,20 +18,19 @@
       <span @click="clear" title="Clear All">
         <font-awesome-icon class="icon" icon="fa-solid fa-dumpster-fire" />
       </span>
-
     </div>
     <div class="title">- Consonants -</div>
-    <RunePartGrid runeType="consonants" :highlite="highlite" v-on:pickRunePart="pickRunePart" v-on:highliteRune="highliteRune"/>
+    <RunePartGrid runeType="consonants" v-on:pickRunePart="pickRunePart" />
     <div class="title">- Vowels -</div>
-    <RunePartGrid runeType="vowels" :highlite="highlite" v-on:pickRunePart="pickRunePart" v-on:highliteRune="highliteRune"/>
+    <RunePartGrid runeType="vowels" v-on:pickRunePart="pickRunePart" />
     <div class="title">- Swap -</div>
-    <RunePartGrid  runeType="swap" :highlite="highlite" v-on:pickRunePart="pickRunePart" v-on:highliteRune="highliteRune"/>
+    <RunePartGrid  runeType="swap" v-on:pickRunePart="pickRunePart" />
     <div class="title">- IPA Lookup -</div>
     <TextToIPA />
   </div>
   <div class="right">
+    <RuneEditor />
     <div class="entries">
-      <WordView :words="currentEntry" :position="position" :highlite="highlite" showPhonics=true showEnglish=true v-on:highliteRune="highliteRune" v-on:selectRune="selectRune" />
       <div class="entry" v-for="(entry,i) in filteredEntries" :key="entry.words">
         <div class="entryHeader">
           <span class="entryTitle">
@@ -44,7 +43,7 @@
             <font-awesome-icon class="icon" icon="fa-solid fa-trash-can" @click="deleteEntry(i)" />
           </span>
         </div>   
-        <WordView :words="entry.words" :highlite="highlite" showPhonics=true showEnglish=true v-on:highliteRune="highliteRune" />
+        <WordView :words="entry.words" showPhonics=true showEnglish=true />
       </div>
     </div>
   </div>
@@ -54,6 +53,9 @@
 import RunePartGrid from './components/RunePartGrid.vue'
 import WordView from './components/WordView.vue'
 import TextToIPA from './components/TextToIPA.vue'
+import RuneEditor from './components/RuneEditor.vue'
+
+import * as editor from './lib/editor.js';
 
 const example = [{ 
     title:"Example",
@@ -65,8 +67,24 @@ export default {
     RunePartGrid,
     WordView,
     TextToIPA,
+    RuneEditor
   },
   methods: {
+    clear: function() {
+      editor.clear();
+    },
+    createWord: function() {
+      editor.createWord();
+    },
+    createRune: function() {
+      editor.createRune();
+    },  
+    delRune: function() {
+      editor.delRune();
+    },
+    delWord: function() {
+      editor.delWord();
+    },
     store: function() {
       localStorage.setItem('entries', JSON.stringify(this.entries));
     },
@@ -78,7 +96,7 @@ export default {
         this.entries[this.editingIndex] = entry;
       }
       this.store();
-      this.clear();
+      editor.clear();
     },
     moveUp(i) {
       if(i == 0) {
@@ -99,7 +117,7 @@ export default {
       this.store();
     },
     editEntry(i) {
-      this.clear();
+      editor.clear();
       this.currentEntry = JSON.parse(JSON.stringify(this.entries[i].words));
       this.title = this.entries[i].title;
       this.editingIndex = i;
@@ -109,126 +127,7 @@ export default {
       this.store();
     },
     pickRunePart: function(rune) {
-      this.currentRune[rune.typeIndex] = rune.value;
-    },
-    clear() {
-      this.currentEntry = [[[0,0,0]]];
-      this.position = {
-        word: 0,
-        rune: 0
-      }
-      this.title = "";
-      this.editingIndex = -1;
-    },
-    selectRune(word,rune) {
-      if(!this.currentEntry[word]) {
-        this.currentEntry[word] = [];
-      }
-      if(!this.currentEntry[word][rune]) {
-        this.currentEntry[word][rune] = [0,0,0];
-      }
-      this.position = {word, rune};
-    },
-    nextRune() {
-      if(this.currentRune.some(v => v > 0)) {
-        this.createRune();
-      } else {
-        this.delRune();
-        this.createWord();
-      }
-    },
-    createRune: function() {
-      if(this.currentEntry[this.position.word][this.position.rune+1]) {
-        this.currentEntry[this.position.word].splice(this.position.rune+1,0,[0,0,0]);
-      }
-      this.selectRune(this.position.word,this.position.rune+1);
-    },
-    createWord: function() {
-      if(this.currentEntry[this.position.word+1]) {
-        this.currentEntry.splice(this.position.word+1,0,[]);
-      }
-      this.selectRune(this.position.word+1,0);
-    },
-    delRune: function() {
-      if( this.currentEntry[this.position.word].length == 1 ){
-        this.delWord();
-        return;
-      }
-      this.currentEntry[this.position.word].splice(this.position.rune,1);
-      if(!this.currentRune) {
-        this.selectRune(this.position.word,this.position.rune-1);
-      }
-    },
-    delWord: function() {
-      if( this.currentEntry.length == 1 ){
-        this.currentEntry = [];
-        this.selectRune(0,0);
-        return;
-      } 
-      this.currentEntry.splice(this.position.word,1);
-      const newWord = !this.currentEntry[this.position.word-1] ? this.position.word: this.position.word-1;
-      this.selectRune(newWord,this.currentEntry[newWord].length);
-    },
-    highliteRune: function(rune) {
-      this.highlite = rune
-    },
-    keyPress: function(e) {
-      if(e.key==' ') {
-        this.nextRune();
-        return
-      }
-      if(e.key=='Backspace') {
-        this.delRune();
-        return
-      }
-      if(e.key.match(/^[a-x]$/)) {
-        const offset = 96;
-        const num = e.key.charCodeAt(0)-offset;
-        this.currentRune[0] = this.currentRune[0] == num ? 0 : num;
-        return;
-      }
-      if(e.key.match(/^[A-R]$/)){
-        const offset = 64;
-        const num = e.key.charCodeAt(0)-offset;
-        this.currentRune[1] = this.currentRune[1] == num ? 0 : num;
-        return;
-      }
-      if(e.key=='z') {
-        this.currentRune[0] = 0;
-        return;
-      }
-      if(e.key=='Z') {
-        this.currentRune[1] = 0;
-        return;
-      }
-      if(e.key=='.') {
-        this.currentRune[2] = this.currentRune[2] ? 0 : 1;
-        return;
-      }
-      if(e.key=='ArrowLeft') {
-        if(this.position.rune > 0) {
-          this.position.rune = this.position.rune-1;
-          return;
-        }
-        if(this.position.word == 0) {
-          return
-        }
-        this.position.word = this.position.word-1;
-        this.position.rune = this.currentWord.length-1;
-        return;
-      }
-      if(e.key=='ArrowRight') {
-        if(this.position.rune < this.currentWord.length-1) {
-          this.position.rune = this.position.rune+1;
-          return;
-        }
-        if(this.position.word == this.currentEntry.length-1) {
-          return
-        }
-        this.position.word = this.position.word+1;
-        this.position.rune = 0;
-        return;
-      }
+      editor.pickRunePart(rune);
     },
   },
   computed: {
@@ -244,8 +143,6 @@ export default {
   },
   data() {
     return {
-      ready: false,
-      highlite: [0,0,0],
       position: {
         word: 0,
         rune: 0
@@ -253,14 +150,9 @@ export default {
       currentEntry: [[[0,0,0]]],
       editingIndex: -1,
       title: "",
-      entries: JSON.parse(localStorage.getItem('entries')) || example
+      entries: JSON.parse(localStorage.getItem('entries')) || example,
+      inputSubscription$: null
     }
-  },
-  mounted() {
-    window.addEventListener('keydown', this.keyPress);
-  },
-  unmounted() {
-    window.removeEventListener('keydown', this.keyPress);
   },
 }
 </script>

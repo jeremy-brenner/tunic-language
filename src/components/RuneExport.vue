@@ -17,13 +17,13 @@ export default {
   methods: {
     imgLoaded() {
       const runeCanvas = document.createElement('canvas');
-      runeCanvas.width = this.$refs.runeImage.width;
-      runeCanvas.height = this.$refs.runeImage.height;
-
+      const padding = 10;
+      runeCanvas.width = this.$refs.runeImage.width+padding*2;
+      runeCanvas.height = this.$refs.runeImage.height+padding*2;
       const ctx = runeCanvas.getContext('2d');
       ctx.fillStyle = "white";
-      ctx.fillRect( 0, 0, this.$refs.runeImage.width, this.$refs.runeImage.height );
-      ctx.drawImage(this.$refs.runeImage, 0, 0, this.$refs.runeImage.width, this.$refs.runeImage.height );
+      ctx.fillRect( 0, 0, this.$refs.runeImage.width+padding*2, this.$refs.runeImage.height+padding*2 );
+      ctx.drawImage(this.$refs.runeImage, padding, padding, this.$refs.runeImage.width, this.$refs.runeImage.height );
       runeCanvas.toBlob((blob) => {
         this.$emit('exportDone', {runeIndex:this.runeIndex, blob});
       }, "image/png")

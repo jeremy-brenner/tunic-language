@@ -21,19 +21,6 @@
       </div>   
     </div>
   </div>
-  <div class="controls">
-    <span>
-      <a :href="exportURI" download="tunic-export.json">
-        Export entries
-        <font-awesome-icon class="icon" icon="fa-solid fa-download"/>
-      </a>
-    </span>
-    <span>
-      Import entries
-      <input ref="fileupload" type="file" name="fileupload" @change="importBooks" />
-      <font-awesome-icon class="icon" icon="fa-solid fa-upload" />
-    </span>
-  </div>
 </template>
 <script>
 import * as editor from '../lib/editor.js';
@@ -51,12 +38,6 @@ export default {
       entries: [],
       stateSubscription$: null,
       booksSubscription$: null,
-      export: ''
-    }
-  },
-  computed: {
-    exportURI() {
-      return "data:application/octet-stream," + encodeURIComponent(this.export);
     }
   },
   methods: {
@@ -81,20 +62,12 @@ export default {
     newBook() {
       runeBook.newBook('something');
     },
-    importBooks() {
-      this.$refs.fileupload.files[0].text().then(json =>{
-        this.$refs.fileupload.value = null;
-        runeBook.importBooks(json);
-        editor.clear();
-      });
-    }
   },
   mounted() {
     this.booksSubscription$ = runeBook.booksSubject$.subscribe( books => {
       this.currentBook = books.currentBook;
       this.bookTitles = books.bookTitles;
       this.entries = books.entries;
-      this.export = books.export;
     });
     this.stateSubscription$ = editor.stateSubject$.subscribe( state => {
       this.editingIndex = state.editingIndex;
@@ -117,31 +90,6 @@ export default {
   overflow-x: auto;
   overflow-y: auto;
 }
-
-.controls {
-  display: flex;
-}
-
-.controls > span {
-  border: 1px solid black;
-  flex: 1;
-  text-align: center;
-  cursor: pointer;
-  position: relative;
-}
-
-.controls > span > input {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  opacity: 0;
-}
-.controls > span:hover {
-  background-color: #f0f0f0;
-}
-
 .entryHeader {
   display: flex;
 }
@@ -177,11 +125,6 @@ export default {
   flex: 1;
   border-left: 1px solid black;
   border-bottom: 1px solid black;
-}
-
-a:link , a:visited, a:hover,a:active {
-  text-decoration: none;
-  color: currentcolor;
 }
 
 </style>

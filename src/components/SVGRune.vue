@@ -1,9 +1,9 @@
 <template>
-  <svg :viewBox="viewBox">
-    <line class="innerLine" :x1="line[0][0]" :y1="line[0][1]" :x2="line[1][0]" :y2="line[1][1]" v-for="(line) in innerLines" :key="line"/>
-    <line class="outerLine" :x1="line[0][0]" :y1="line[0][1]" :x2="line[1][0]" :y2="line[1][1]" v-for="(line) in outerLines" :key="line"/>
-    <line class="centerLine" :x1="leftX" :y1="centerLineY" :x2="rightX" :y2="centerLineY" />
-    <circle class="swap" :cx="centerX" :cy="circlePosition" :r="circleR" v-if="circle"/>
+  <svg :viewBox="viewBox" >
+    <line class="innerLine" :x1="line[0][0]" :y1="line[0][1]" :x2="line[1][0]" :y2="line[1][1]" :stroke="innerColor" :stroke-width="strokeWidth" stroke-linecap="round" shape-rendering="geometricPrecision" v-for="(line) in innerLines" :key="line"/>
+    <line class="outerLine" :x1="line[0][0]" :y1="line[0][1]" :x2="line[1][0]" :y2="line[1][1]" :stroke="outerColor" :stroke-width="strokeWidth" stroke-linecap="round" shape-rendering="geometricPrecision" v-for="(line) in outerLines" :key="line"/>
+    <line class="centerLine" :x1="leftX" :y1="centerLineY" :x2="rightX" :y2="centerLineY" stroke="currentcolor" :stroke-width="strokeWidth" stroke-linecap="round" shape-rendering="geometricPrecision" />
+    <circle class="swap" :cx="centerX" :cy="circlePosition" :r="circleR" :stroke="swapColor" :stroke-width="strokeWidth" stroke-linecap="round" shape-rendering="geometricPrecision" fill="none" v-if="circle"/>
   </svg>
 </template>
 <script>
@@ -18,37 +18,37 @@ export default {
   props: ['rune'],
   computed: {
     centerX: function() {
-      return this.lineLength*(Math.sqrt(3)/2);
+      return this.lineLength*(Math.sqrt(3)/2) + this.leftX;
     },
     leftX: function() {
-      return 0;
+      return this.strokeWidth/2;
     },
     rightX: function() {
-      return this.centerX*2;
+      return this.centerX*2-this.strokeWidth/2;
     },
     topY: function() {
-      return 0;
-    },
-    bottomY: function() {
-      return this.sideBottomY + this.sideTopY;
+      return this.strokeWidth/2;
     },
     sideTopY: function() {
-      return this.lineLength*(1/2);
+      return this.strokeWidth/2+this.lineLength*(1/2);
+    },
+    middleTopY: function() {
+      return this.strokeWidth/2+this.lineLength;
     },
     sideBottomY: function() {
       return this.sideTopY + this.sideH;
     },
-    middleTopY: function() {
-      return this.sideTopY * 2;
+    bottomY: function() {
+      return this.sideTopY + this.sideH + this.lineLength*(1/2);
     },
     middleBottomY: function() {
-      return this.sideH;
+      return this.strokeWidth/2+this.sideH;
     },
     centerLineY: function() {
       return this.middleTopY + (this.middleBottomY - this.middleTopY)/2;
     },
     sideH: function() {
-       return this.middleTopY + this.strokeWidth*4;
+       return this.lineLength + this.strokeWidth*4;
     },
     circleR() {
       return this.sideH / 8;
@@ -56,11 +56,14 @@ export default {
     circlePosition() {
       return this.bottomY + this.circleR;
     },
+    svgW: function() {
+      return this.centerX*2;
+    },
     svgH() {
-      return this.bottomY + this.circleR*2;
+      return this.bottomY + this.circleR*2 + this.strokeWidth/2;
     },
     viewBox() {
-      return `0 0 ${this.rightX} ${this.svgH}`;
+      return `0 0 ${this.svgW} ${this.svgH}`;
     },
     outerLineDefs() {
       return {
@@ -108,9 +111,16 @@ export default {
     swapColor() {
       return this.swapHighlite ? this.highliteColor : "currentcolor"
     },
+    svgR() {
+      return this.svgW/this.svgH;
+    },
+    strokeR() {
+      return this.strokeWidth/this.svgH;
+    }
   },
   data() {
     return {
+      height: '1.6em',
       lineLength: 100,
       strokeWidth: 24,
       highliteColor: 'green',
@@ -129,36 +139,11 @@ export default {
 </script>
 <style scoped>
   svg {
-    height: 1.6em;
-    width: auto;
-    overflow: visible;
+    height: v-bind(height);
+    width: calc(v-bind(height) * v-bind(svgR));
     padding-top: 0.2em;
     padding-bottom: 0.1em;
-    margin-left: 0.1em;
-    margin-right: -0.1em;
+    margin-right: calc(v-bind(height) * v-bind(strokeR) * -1);
+     /* -0.1em; */
   }
-
-  line, circle {
-    stroke-width: v-bind(strokeWidth);
-    stroke-linecap: round;
-    fill: none;
-    shape-rendering: geometricPrecision;
-  }
-
-  .innerLine {
-    stroke: v-bind(innerColor);
-  }
-
-  .outerLine {
-    stroke: v-bind(outerColor);
-  }
-
-  .centerLine {
-    stroke: currentcolor;
-  }
-
-  .swap {
-    stroke: v-bind(swapColor);
-  }
-
 </style>

@@ -6,30 +6,28 @@
     <RunePartGrid runeType="vowels" />
     <div class="title">- Swap -</div>
     <RunePartGrid  runeType="swap" />
-    <div class="title">- IPA Lookup -</div>
-    <TextToIPA />
     <div class="title">- Entries -</div>
     <RuneBook />
-
   </div>
   <div class="right">
     <RuneEditor />
   </div>
+  <SidePanel />
 </template>
 
 <script>
 import RunePartGrid from './components/RunePartGrid.vue'
-import TextToIPA from './components/TextToIPA.vue'
 import RuneEditor from './components/RuneEditor.vue'
 import RuneBook from './components/RuneBook.vue'
+import SidePanel from './components/SidePanel.vue'
 
 export default {
   name: 'App',
   components: {
     RunePartGrid,
-    TextToIPA,
     RuneEditor,
-    RuneBook
+    RuneBook,
+    SidePanel
   },
 }
 </script>
@@ -56,7 +54,7 @@ body {
 .left, .right {
   vertical-align: top;
   overflow: hidden;
-  padding: 1em;
+  padding: 1.25em;
   display: flex;
   flex-direction: column;
 }
@@ -67,9 +65,9 @@ body {
 }
 
 .icon {
-  width: 1.25em;
+  width: 1em;
   padding-top: 0.3em;
-}
+} 
 
 input, button {
   font-size: 0.8em;

@@ -8,6 +8,8 @@ import {
     faTrashCan, 
     faAngleUp, 
     faAngleDown, 
+    faAngleLeft,
+    faAngleRight,
     faPencil, 
     faForwardStep, 
     faForwardFast ,
@@ -25,6 +27,8 @@ import {
 library.add(faTrashCan)
 library.add(faAngleUp)
 library.add(faAngleDown)
+library.add(faAngleLeft)
+library.add(faAngleRight)
 library.add(faPencil)
 library.add(faForwardStep)
 library.add(faForwardFast)
